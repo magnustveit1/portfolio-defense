@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEOG 6165 · Geomorphic Change Story Map | Magnus Tveit</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html" aria-current="page">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="page-header">
+  <div class="eyebrow">GEOG 6165 · Data Visualization</div>
+  <h1>Visualizing Geomorphic Change in Lower Cataract Canyon: An Interactive Story Map</h1>
+  <div class="page-meta">
+    <span>Instructor: Sonam Sherpa</span>
+    <span>Spring 2026</span>
+  </div>
+</header>
+
+<main class="paper">
+
+  <section id="arc-top">
+    <div class="section-label">Part 2 of 2</div>
+    <p class="arc-link">Built on → <a href="6130.html">GEOG 6130: the LiDAR differencing analysis behind these maps</a></p>
+    <p style="margin-top:1rem;">The 6130 analysis produced solid difference maps, but they used default QGIS stretch rendering, which means almost nothing to anyone outside remote sensing. This project is entirely about visualization. It turns fifteen years of measured erosion and deposition into an interactive story a general audience can follow.</p>
+  </section>
+
+  <section id="storymap" class="wide">
+    <div class="section-label">The deliverable</div>
+    <h2>The Story Map</h2>
+    <div class="storymap-embed">
+      <iframe src="https://arcg.is/me0Wf0" title="Story Map: Visualizing Geomorphic Change in Lower Cataract Canyon" loading="lazy" allowfullscreen></iframe>
+      <div class="storymap-fallback">If the embed doesn't load, open the Story Map directly: <a href="https://arcg.is/me0Wf0">arcg.is/me0Wf0</a></div>
+    </div>
+  </section>
+
+  <section id="design">
+    <div class="section-label">Design rationale</div>
+    <h2>The color scheme</h2>
+    <p>Difference rasters are diverging data. Erosion sits below zero and deposition above, so the color scheme was the biggest design decision. Following Brewer's guidance, the ramp runs from warm red-orange for erosion, through near-white at zero, to cool blue for deposition. It avoids red-green combinations for colorblind readers and uses lightness, not just hue, to show magnitude.</p>
+    <p>The tricky part was the zero point. The data are not symmetric. Erosion reaches <strong>−17 m</strong> (RM 196.7) while deposition tops out around <strong>+12 m</strong> (Dirty Devil confluence). A symmetric range would either clip real erosion or waste color on deposition that never happens. So the display range is −17 to +12 based on the measured maxima, and the white zero stop sits at <strong>59% of the ramp</strong> (17 divided by 29) so that white means exactly 0 m.</p>
+    <p>All three rasters use identical symbology, set up once and copied over with ArcGIS Pro's Import Symbology. The same color means the same amount of change in every time period, so the maps can be compared directly.</p>
+    <p>The legend was built in ArcGIS Pro's Layout view because AGOL's auto-generated legend can't label an asymmetric diverging ramp correctly. The finished maps and legend are all in the Story Map above.</p>
+  </section>
+
+  <section id="narrative">
+    <div class="section-label">Narrative design</div>
+    <h2>Writing for a general audience</h2>
+    <p>The Story Map uses Sidecar sections. As the viewer scrolls, each slide pans and zooms the map to the next study site, which keeps people oriented even if they have never seen the canyon. The text assumes no remote sensing or geomorphology background, and technical terms get plain definitions the first time they show up.</p>
+    <p>Two method notes, one about the rasters covering different extents and one about cliff artifacts, appear right where each issue first becomes visible instead of up front in a methods section. That follows Tufte's idea that annotation should help the viewer at the moment they need it. The layout and legend choices leaned on his data-ink and graphical integrity principles too.</p>
+  </section>
+
+  <section id="arc-bottom">
+    <div class="section-label">Part 2 of 2</div>
+    <p class="arc-link">Built on → <a href="6130.html">GEOG 6130: Erosion Dynamics of the Dominy Formation</a></p>
+  </section>
+
+  <section id="skills">
+    <div class="section-label">Skills demonstrated</div>
+    <div class="skill-tags">
+      <a href="about.html#skills">Cartography &amp; Graphic Design</a>
+      <a href="about.html#skills">Communication</a>
+      <a href="about.html#skills">GIS Workflow</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>

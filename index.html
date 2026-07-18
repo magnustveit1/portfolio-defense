@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnus Tveit · MSGIS Portfolio</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">MSGIS · University of Utah · Portfolio Defense, August 5th, 2026</div>
+  <h1>Magnus Tveit</h1>
+  <p class="tagline">Wildfire risk modeling, geomorphic change detection, and deep learning pipelines, built on real time spent in the field.</p>
+</header>
+
+<div class="intro">
+  <p>I spent two fire seasons on a hotshot crew in California's Stanislaus National Forest before moving into GIS. That experience drives most of the work here: deep learning for wildfire risk, LiDAR change detection, and reproducible HPC workflows. <a href="about.html">More about me →</a></p>
+</div>
+
+<nav class="courses" aria-label="Coursework and projects">
+  <div class="section-label">Coursework &amp; Projects</div>
+  <div class="course-grid">
+
+    <a class="course-card featured" href="capstone.html">
+      <div class="course-num">GEOG 6161 · Capstone</div>
+      <div class="course-title">Identifying Structures Within the High-Risk Wildland Urban Interface</div>
+      <div class="course-desc">Manual review of 16,676 building polygons plus a fine-tuned Mask R-CNN pipeline, built for FFSL to create the structure inventory Utah HB48 requires.</div>
+      <div class="course-skills">GIS Analysis · Spatial Data &amp; Algorithms · GIS Workflow · Model Building · Cartography &amp; Graphic Design · Spatial Analysis · Data Models &amp; Structures · Database Design · SQL · Project Design · Project Management · Communication · Programming</div>
+    </a>
+
+    <a class="course-card" href="6150.html">
+      <div class="course-num">GEOG 6150 · Geospatial Big Data</div>
+      <div class="course-title">Headless SfM Photogrammetry on the CHPC</div>
+      <div class="course-desc">A scripted Metashape pipeline that turned 860 video frames into a ~20M point cloud and orthomosaic in 53 hours instead of two weeks.</div>
+      <div class="course-skills">Spatial Data &amp; Algorithms · GIS Workflow · Project Design · Programming</div>
+    </a>
+
+    <a class="course-card" href="6130.html">
+      <div class="course-num">GEOG 6130 · Adv. Active Remote Sensing</div>
+      <div class="course-title">Erosion Dynamics of the Dominy Formation</div>
+      <div class="course-desc">LiDAR differencing across 2005, 2015, and 2020 to measure erosion in Lower Cataract Canyon, including over 270,000 m³ removed at a single bank.</div>
+      <div class="course-skills">GIS Analysis · Spatial Data &amp; Algorithms · Spatial Analysis · Project Design</div>
+    </a>
+
+    <a class="course-card" href="6165.html">
+      <div class="course-num">GEOG 6165 · Data Visualization</div>
+      <div class="course-title">Geomorphic Change Story Map</div>
+      <div class="course-desc">An ArcGIS Story Map that redesigns the LiDAR difference maps for a public audience, with custom diverging symbology and a guided narrative.</div>
+      <div class="course-skills">Cartography &amp; Graphic Design · Communication · GIS Workflow</div>
+    </a>
+
+    <a class="course-card" href="6920.html">
+      <div class="course-num">CVEEN 6920 · Hydroinformatics</div>
+      <div class="course-title">LSTM Streamflow Prediction, Upper Green River Basin</div>
+      <div class="course-desc">A PyTorch LSTM trained on three unregulated gauges and tested on an unseen site (NSE 0.524), built on an automated NWIS + Daymet pipeline.</div>
+      <div class="course-skills">Model Building · Spatial Analysis · Project Design · Communication · Programming</div>
+    </a>
+
+    <a class="course-card" href="about.html">
+      <div class="course-num">About</div>
+      <div class="course-title">From Hotshot Crew to GIS</div>
+      <div class="course-desc">Background, education, and current work with Utah DNR/FFSL and the Department of Geology &amp; Geophysics, plus all thirteen portfolio skills.</div>
+      <div class="course-skills">Bio · Skills · Contact</div>
+    </a>
+
+    <a class="course-card" href="https://github.com/magnustveit1">
+      <div class="course-num">github.com/magnustveit1</div>
+      <div class="course-title">Code &amp; Repositories</div>
+      <div class="course-desc">All of my projects are public on GitHub, including the capstone deep learning pipeline, the hydrology pipelines, and full reproducibility documentation.</div>
+      <div class="course-skills">Programming · Reproducibility · GitHub</div>
+    </a>
+
+  </div>
+</nav>
+
+<section class="research-strip">
+  <span class="strip-label">Ongoing research</span>
+  <p>As Lake Powell drops, the Colorado River is cutting through decades of deposited sediment in Lower Cataract Canyon. I study this with Dr. Cari Johnson, and the work shows up in <a href="6150.html">GEOG 6150</a>, <a href="6130.html">GEOG 6130</a>, and <a href="6165.html">GEOG 6165</a>.</p>
+</section>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>

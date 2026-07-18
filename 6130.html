@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEOG 6130 · Erosion Dynamics of the Dominy Formation | Magnus Tveit</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1.4rem 0; }
+  table.data-table th, table.data-table td { border: 1px solid var(--line); padding: 0.55rem 0.7rem; text-align: left; }
+  table.data-table th { font-family: 'Courier New', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; background: var(--paper-dim); }
+</style>
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html" aria-current="page">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="page-header">
+  <div class="eyebrow">GEOG 6130 · Advanced Active Remote Sensing</div>
+  <h1>Erosion Dynamics of the Dominy Formation: A Multi-Temporal Remote Sensing Analysis</h1>
+  <div class="page-meta">
+    <span>Instructor: Dr. Richard Forster</span>
+    <span>Fall 2025</span>
+  </div>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><span class="num">3</span><span class="label">LiDAR epochs · 2005 / 2015 / 2020</span></div>
+  <div class="stat"><span class="num">270,322 m³</span><span class="label">eroded at RM 172.7</span></div>
+  <div class="stat"><span class="num">15.0 m</span><span class="label">mean erosion at RM 196.7</span></div>
+  <div class="stat"><span class="num">0.2%</span><span class="label">internal accuracy check</span></div>
+</div>
+
+<main class="paper">
+
+  <section id="background">
+    <div class="section-label">Research question</div>
+    <h2>The research question</h2>
+    <p>When Glen Canyon Dam closed in 1963, rising water buried Lower Cataract Canyon's channel under tens of meters of fine sediment, now called the Dominy Formation. Around 2000 a long drought started pulling Lake Powell down, exposing that sediment. Since then buried rapids have reemerged, banks have collapsed, and the river has been cutting back down through the deposit fast.</p>
+    <p>This project put numbers on that change. Using three airborne LiDAR surveys spanning fifteen years, where did the canyon surface change, by how much, and with what confidence?</p>
+  </section>
+
+  <section id="data">
+    <div class="section-label">Data</div>
+    <h2>The three LiDAR surveys</h2>
+    <table class="data-table">
+      <thead><tr><th>Epoch</th><th>Program &amp; source</th><th>Acquired</th><th>Role in analysis</th></tr></thead>
+      <tbody>
+        <tr><td>2005</td><td>NCALM, via OpenTopography</td><td>Feb 17&ndash;23, 2005</td><td>Baseline near the start of the major Lake Powell decline</td></tr>
+        <tr><td>2015</td><td>Colorado, Green &amp; Yampa Rivers LiDAR Project (FFSL + NPS), via UGRC</td><td>Oct&ndash;Nov 2015</td><td>River-corridor comparison surface</td></tr>
+        <tr><td>2020</td><td>Southern Utah LiDAR Acquisition (UGRC + Utah Div. of Emergency Management)</td><td>May&ndash;Jul 2020</td><td>Most recent, broadest-coverage surface</td></tr>
+      </tbody>
+    </table>
+    <p>All three datasets have vertical accuracy around 10 cm and enough point density for change detection, but they were flown by different programs with different instruments and pixel sizes (1.0 m in 2005 and 2020, 0.5 m in 2015). Datasets like that carry systematic offsets and noise, so I had to measure those before trusting any change estimates.</p>
+  </section>
+
+  <section id="methods">
+    <div class="section-label">Methods</div>
+    <h2>Harmonize → difference → characterize error → quantify volume</h2>
+    <p>I first resampled the three DEMs to a matching cell size and datum. Then I computed difference surfaces (DEMs of Difference, or DoDs) with map algebra for three intervals: 2005–2015, 2015–2020, and 2005–2020. Before reading anything into the maps, I checked vertical uncertainty using stable surfaces like bedrock that should not have moved. That gave a noise estimate for each map and caught a systematic +0.2 m offset in the 2005–2020 comparison. Zonal statistics over the study polygons then turned the difference rasters into sediment volumes, following Wheaton et al. (2010).</p>
+  </section>
+
+  <section id="results">
+    <div class="section-label">Results</div>
+    <h2>Results by site</h2>
+    <figure>
+      <img src="img/6130-fig1.png" alt="Overview map of study sites along the Colorado River in Lower Cataract Canyon.">
+      <figcaption><span class="fig-num">Figure 1.</span> Overview map of study sites by river mile.</figcaption>
+    </figure>
+
+    <h3>RM 196.7: across from Gypsum Canyon</h3>
+    <p>Between 2015 and 2020 the bank across from the mouth of Gypsum Canyon lost <strong>44,457 m³ from just 2,964 m²</strong>. That works out to a mean of <strong>15.0 m</strong> of erosion in five years, the most intense bank erosion anywhere in the study. The Gypsum Canyon debris fan forms a rapid that pushes flow into the bank, which explains why it concentrates there.</p>
+
+    <h3>RM 182.8: mouth of Dark Canyon</h3>
+    <p>A bank of only 539 m² lost over 6,300 m³ between 2015 and 2020, a mean of 11.84 m cut into the bank face. It is a small site, but it shows how fast exposed Dominy sediment fails.</p>
+
+    <h3>RM 177.9: a geomorphic pulse</h3>
+    <p>The same east bank shows up in all three intervals. It lost about <strong>154,850 m³ between 2005 and 2015</strong>, then only <strong>2,932 m³ between 2015 and 2020</strong>. Most of the change happened within a decade of the sediment being exposed, then it mostly stopped. The 2005–2020 map totals 157,437 m³, and the two interval volumes add up to within <strong>345 m³ (0.2%)</strong> of that. The agreement is a useful internal check that the differencing workflow is consistent.</p>
+
+    <h3>RM 172.7: before Hite Bridge</h3>
+    <p>Just upstream of Hite Bridge, over <strong>270,322 m³</strong> was removed from 31,080 m² of bank between 2005 and 2015, an average loss of 8.7 m. The retreat was steady and large across the whole decade.</p>
+
+    <h3>Dirty Devil confluence: channel migration</h3>
+    <p>Near the Dirty Devil River, the 2005&ndash;2020 comparison shows the channel migrating. The north side gained 128,028 m³ (mean +10.08 m) while the south side lost 104,326 m³ (mean 7.60 m). The river is eroding one bank and building the other. The Garfield/San Juan county line was drawn down the center of the river in the 1880s and now sits south of the channel, so the river has moved north of its pre-dam position.</p>
+
+    <h3>Riverbed elevation changes</h3>
+    <p>At RM 168 near the Hite Overlook, the riverbed rose by over 1,086,792 m³ across 145,456 m² (mean +7.47 m) between 2005 and 2015. At RM 177 above Sheep Canyon it dropped 206,617 m³ (mean 2.44 m) over the same period. Both signals are broad and uniform, and both are probably affected by how the datasets smooth surfaces classified as water, so I read them more cautiously than the bank results.</p>
+
+    <figure>
+      <img src="img/6130-fig2.png" alt="DEM of Difference maps showing erosion and deposition at the study sites.">
+      <figcaption><span class="fig-num">Figure 2.</span> DoD maps for representative study sites (red = erosion, blue = deposition).</figcaption>
+    </figure>
+  </section>
+
+  <section id="limitations">
+    <div class="section-label">Limitations</div>
+    <h2>Limitations</h2>
+    <p>A few limitations matter here. The 2015 DEM is 0.5 m while 2005 and 2020 are 1.0 m, so harmonizing them requires resampling, which probably contributes to the +0.2 m offset in the 2005&ndash;2020 comparison. Near-vertical cliffs produce oblique LiDAR returns and elevation errors up to about 20 m in places, so extreme values along cliffs are artifacts, not real change. The 2005 dataset only covers the river corridor, about a third of the study area, which limits both the comparison extent and the stable terrain available for the error check. The datasets smooth surfaces classified as water, so riverbed signals are uncertain, and there are no discharge records for the three flights to help separate water level change from sediment change. Finally, the ground-based photogrammetry models from <a href="6150.html">GEOG 6150</a> could not be aligned to the DEMs because only two GNSS control points were recorded.</p>
+  </section>
+
+  <section id="continued">
+    <div class="section-label">Part 1 of 2</div>
+    <p class="arc-link">Continued in → <a href="6165.html">GEOG 6165: redesigning these difference maps as an interactive public Story Map</a></p>
+  </section>
+
+  <section id="skills">
+    <div class="section-label">Skills demonstrated</div>
+    <div class="skill-tags">
+      <a href="about.html#skills">GIS Analysis</a>
+      <a href="about.html#skills">Spatial Data &amp; Algorithms</a>
+      <a href="about.html#skills">Spatial Analysis</a>
+      <a href="about.html#skills">Project Design</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>

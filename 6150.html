@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEOG 6150 · Headless SfM on the CHPC | Magnus Tveit</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1.4rem 0; }
+  table.data-table th, table.data-table td { border: 1px solid var(--line); padding: 0.55rem 0.7rem; text-align: left; }
+  table.data-table th { font-family: 'Courier New', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; background: var(--paper-dim); }
+  .model-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin: 1.4rem 0 0; }
+  .model-links a { font-family: 'Courier New', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--forest); text-decoration: none; border: 1px solid var(--line); padding: 0.6rem 0.8rem; background: var(--paper); }
+  .model-links a:hover { background: var(--forest-deep); color: var(--paper); }
+  @media (max-width: 640px) { .model-links { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html" aria-current="page">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="page-header">
+  <div class="eyebrow">GEOG 6150 · Geospatial Big Data</div>
+  <h1>Using the CHPC to Solve the Big Data Problem of Large Datasets for SfM Photogrammetry</h1>
+  <div class="page-meta">
+    <span>Instructor: Dr. Alexander Hohl</span>
+    <span>Fall 2025</span>
+  </div>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><span class="num">860</span><span class="label">video frames processed</span></div>
+  <div class="stat"><span class="num">~20M</span><span class="label">dense cloud points</span></div>
+  <div class="stat"><span class="num">16 min / 53 hr</span><span class="label">test run vs full run</span></div>
+  <div class="stat"><span class="num">10-15 days</span><span class="label">saved vs a laptop</span></div>
+</div>
+
+<main class="paper">
+
+  <section id="background">
+    <div class="section-label">Background</div>
+    <h2>Background</h2>
+    <p>DEMs and orthomosaics usually come from LiDAR, but Structure-from-Motion (SfM) photogrammetry can make the same products from regular imagery, no LiDAR sensor or drone needed. The tradeoff is compute. Modern cameras produce huge numbers of high resolution frames, and processing them into a dense point cloud can take a laptop days or weeks.</p>
+    <p>This project comes out of Lower Cataract Canyon, where the Colorado River meets Lake Powell. Drones are banned in Glen Canyon National Recreation Area, so ground-based SfM is the only realistic way to map the eroding Dominy Formation. I built a <em>headless</em> Metashape pipeline (no GUI, all Python) that runs through SLURM on the University of Utah's Center for High Performance Computing (CHPC) and cuts a week-plus laptop job down to hours.</p>
+  </section>
+
+  <section id="study-area">
+    <div class="section-label">Study area</div>
+    <h2>The Dominy Formation at Gypsum Canyon</h2>
+    <p>The Dominy Formation is unconsolidated sediment that built up as the Colorado River slowed into Lake Powell. When the reservoir dropped in the early 2000s, tens of millions of cubic meters of submerged sediment were exposed, and the river is now cutting back through it. Field teams from the University of Utah, UGS, USGS, the Glen Canyon Institute, and the Returning Rapids Project visited Lower Cataract Canyon October 15–17, 2025. This project uses the October 15 dataset from the mouth of Gypsum Canyon, collected under Dr. Cari Johnson.</p>
+    <figure>
+      <img src="img/6150-field.png" alt="Gypsum Canyon cutting through the Dominy Formation on its way to the Colorado River, with a GNSS receiver in the center of the frame.">
+      <figcaption><span class="fig-num">Photo.</span> Where Gypsum Canyon cuts through the Dominy Formation on its way to the Colorado River. GNSS receiver center frame. October 2025.</figcaption>
+    </figure>
+  </section>
+
+  <section id="data">
+    <div class="section-label">Data</div>
+    <h2>Multi-distance video capture</h2>
+    <p>Four videos film the same outcrop from increasing distances. The close passes capture fine texture, and the far passes tie the scene together and cover the wash bed where the GNSS control points sit. I extracted one frame per second (every 30th frame), which gave 860 PNG frames. The frames have no GPS metadata, so everything runs in local coordinates.</p>
+    <table class="data-table">
+      <thead><tr><th>Video</th><th>Size (GB)</th><th>Distance</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>59</td><td>1.5</td><td>~10 ft</td><td>High-quality texture</td></tr>
+        <tr><td>60</td><td>1.1</td><td>~15 ft</td><td rowspan="2">Mesh close-up and far imagery accurately</td></tr>
+        <tr><td>61</td><td>2.0</td><td>~20 ft</td></tr>
+        <tr><td>62</td><td>1.0</td><td>~30 ft</td><td>Wash bed + GNSS control point area</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="methods">
+    <div class="section-label">Methods</div>
+    <h2>Validate, then scale</h2>
+    <p>Everything had to run without a GUI, scripted against Metashape's Python API and submitted through SLURM. Before running the full dataset, I pushed a 55-photo test set through the whole pipeline. It took 16 minutes and confirmed the job scripts, file paths, and API calls all worked before I committed to the 53-hour run. Metashape's API changes between versions, and headless runs on the CHPC give you almost nothing to debug with, so I checked attribute names in an interactive Python shell before finalizing the scripts.</p>
+    <p>The pipeline's five steps, condensed:</p>
+    <pre class="code-excerpt"><span class="cmt"># Step 1: Align cameras (content-based matching, no GPS)</span>
+chunk.matchPhotos(generic_preselection=True, reference_preselection=False)
+chunk.alignCameras()
+
+<span class="cmt"># Step 2: High-resolution depth maps</span>
+chunk.buildDepthMaps(downscale=1, filter_mode=Metashape.MildFiltering)
+
+<span class="cmt"># Step 3: Dense point cloud (~20M points)</span>
+chunk.buildPointCloud(source_data=Metashape.DepthMapsData, point_colors=True)
+
+<span class="cmt"># Step 4: Orthomosaic, using the point cloud as the surface</span>
+chunk.buildOrthomosaic(surface_data=Metashape.DataSource.PointCloudData,
+                       blending_mode=Metashape.MosaicBlending, fill_holes=True)
+
+<span class="cmt"># Step 5: Export as TIFF</span>
+chunk.exportRaster(path=ORTHO_PATH, source_data=Metashape.OrthomosaicData,
+                   image_format=Metashape.ImageFormatTIFF)</pre>
+    <p>Full SLURM and Python scripts are documented in the project report; the job ran on a single Kingspeak node (8 cores, 64 GB RAM).</p>
+  </section>
+
+  <section id="results">
+    <div class="section-label">Results</div>
+    <h2>Results</h2>
+    <p>All 860 frames aligned, most on the first attempt, which points to good overlap between the four videos. The depth maps produced a dense cloud of roughly 20 million points, densest near the outcrop and thinner in the distant Video 62 frames. The point cloud then served as the surface for the orthomosaic, which came out seamless and captures the sediment layering well.</p>
+    <p>The full run finished in 53 hours with no crashes or timeouts. The same job would take an estimated 10 to 15 days on a personal computer. Only two GNSS points landed inside the videos, and three are needed to constrain rotation, so the models are not fully georeferenced. They still work as outcrop references for tracing erosion features and studying the layering.</p>
+  </section>
+
+  <section id="v3geo" class="wide">
+    <div class="section-label">Published models</div>
+    <h2>Explore the models in 3D on V3Geo</h2>
+    <p>The finished models are published on <a href="https://v3geo.com">V3Geo</a>, a repository for 3D geoscience models with a web viewer. The preview below is the model's landing page. <strong>Click it to open the full 3D viewer</strong>, where you can spin, zoom, and measure the outcrop.</p>
+    <div class="storymap-embed">
+      <!-- To feature a different model, change the number in the src below -->
+      <iframe src="https://v3geo.com/model/996" title="Interactive 3D model of the Gypsum Canyon Mouth (Upper) outcrop on V3Geo" loading="lazy" allowfullscreen></iframe>
+      <div class="storymap-fallback">Click the preview to explore, jump straight to the <a href="https://v3geo.com/viewer/#/996">3D viewer</a>, or open the model page directly: <a href="https://v3geo.com/model/996">v3geo.com/model/996</a></div>
+    </div>
+    <p style="margin-top:1.6rem;">Six more models from the October 2025 field campaign are also published:</p>
+    <div class="model-links">
+      <a href="https://v3geo.com/model/998">V3Geo · Gypsum Canyon Mouth · Lower</a>
+      <a href="https://v3geo.com/model/999">V3Geo · Gypsum Rapid · River Right</a>
+      <a href="https://v3geo.com/model/1000">V3Geo · Bowdie · River Right</a>
+      <a href="https://v3geo.com/model/1001">V3Geo · Jotter · River Right</a>
+      <a href="https://v3geo.com/model/1002">V3Geo · Dark · River Right</a>
+      <a href="https://v3geo.com/model/1003">V3Geo · Space Slump · River Left</a>
+    </div>
+  </section>
+
+  <section id="ongoing">
+    <div class="section-label">Ongoing research</div>
+    <p class="arc-link">Next phase → GNSS georeferencing under Dr. Cari Johnson, Department of Geology &amp; Geophysics. The broader Cataract Canyon change-detection work continues in <a href="6130.html">GEOG 6130</a> and <a href="6165.html">GEOG 6165</a>.</p>
+  </section>
+
+  <section id="skills">
+    <div class="section-label">Skills demonstrated</div>
+    <div class="skill-tags">
+      <a href="about.html#skills">Spatial Data &amp; Algorithms</a>
+      <a href="about.html#skills">GIS Workflow</a>
+      <a href="about.html#skills">Project Design</a>
+      <a href="about.html#skills">Programming / Scripting</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>

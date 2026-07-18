@@ -1,0 +1,616 @@
+/* ==========================================================================
+   MSGIS Portfolio: shared stylesheet
+   Palette: deep forest / paper / ember / khaki (see Website_Outline.md)
+   Type: Futura-style sans (headings) · Iowan/Georgia serif (body) · mono (meta)
+   ========================================================================== */
+
+:root {
+  --paper: #EFE9DC;
+  --paper-dim: #E4DCC8;
+  --ink: #23281F;
+  --ink-soft: rgba(35, 40, 31, 0.72);
+  --forest: #2B3B2E;
+  --forest-deep: #1A241C;
+  --ember: #C1502E;
+  --khaki: #A99B72;
+  --khaki-light: #CBBE95;   /* brighter variant for text on dark backgrounds */
+  --line: rgba(35, 40, 31, 0.18);
+  --line-light: rgba(239, 233, 220, 0.15);
+
+  --sans: 'Futura', 'Century Gothic', 'Avenir Next', sans-serif;
+  --serif: 'Iowan Old Style', 'Georgia', serif;
+  --mono: 'Courier New', monospace;
+
+  --pad-x: 8vw;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+
+body {
+  background: var(--forest-deep);
+  color: var(--paper);
+  font-family: var(--serif);
+  line-height: 1.55;
+}
+
+a { color: inherit; }
+a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+
+/* --------------------------------------------------------------------------
+   Signature: subtle topographic contour texture for dark sections
+   -------------------------------------------------------------------------- */
+.contour-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.10;
+  pointer-events: none;
+  background-image:
+    repeating-radial-gradient(circle at 15% 25%, transparent 0, transparent 38px, var(--khaki) 39px, transparent 40px),
+    repeating-radial-gradient(circle at 85% 70%, transparent 0, transparent 52px, var(--khaki) 53px, transparent 54px);
+}
+
+/* --------------------------------------------------------------------------
+   Global navigation
+   -------------------------------------------------------------------------- */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  padding: 0.85rem var(--pad-x);
+  background: var(--forest-deep);
+  border-bottom: 1px solid var(--line-light);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topnav .monogram {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: var(--paper);
+  border: 1px solid var(--khaki);
+  padding: 0.15rem 0.45rem;
+}
+
+.topnav a { text-decoration: none; color: rgba(239, 233, 220, 0.85); }
+.topnav a:hover { color: var(--paper); text-decoration: underline; text-underline-offset: 4px; }
+.topnav a[aria-current="page"] { color: var(--paper); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--khaki); }
+
+/* Capstone gets the ember accent: the anchor page of the defense */
+.topnav .nav-capstone { color: var(--ember); font-weight: bold; }
+.topnav .nav-capstone:hover,
+.topnav .nav-capstone[aria-current="page"] { color: var(--ember); text-decoration-color: var(--ember); }
+
+.topnav .nav-contact { margin-left: auto; color: var(--ember); font-weight: bold; }
+
+/* Courses dropdown (CSS-only, keyboard friendly) */
+.nav-dropdown { position: relative; }
+.nav-dropdown > button {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: rgba(239, 233, 220, 0.85);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.nav-dropdown > button:hover { color: var(--paper); }
+.nav-dropdown ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -0.9rem;
+  min-width: 11rem;
+  list-style: none;
+  background: var(--forest-deep);
+  border: 1px solid var(--line-light);
+  padding: 0.4rem 0;
+}
+.nav-dropdown:hover ul,
+.nav-dropdown:focus-within ul { display: block; }
+.nav-dropdown ul a {
+  display: block;
+  padding: 0.45rem 0.9rem;
+}
+.nav-dropdown ul a:hover { background: var(--forest); text-decoration: none; }
+
+/* --------------------------------------------------------------------------
+   Hero (homepage) and page headers (course pages)
+   -------------------------------------------------------------------------- */
+header.hero,
+header.page-header {
+  position: relative;
+  z-index: 1;
+  padding: 8vh var(--pad-x) 10vh;
+  border-bottom: 1px solid var(--line-light);
+}
+header.page-header { padding: 6vh var(--pad-x) 6vh; }
+
+.eyebrow {
+  font-family: var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--khaki-light);
+  margin-bottom: 1.4rem;
+}
+
+h1 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  max-width: 14ch;
+}
+header.page-header h1 {
+  font-size: clamp(1.7rem, 3.6vw, 2.7rem);
+  max-width: 28ch;
+}
+
+.tagline {
+  margin-top: 1.6rem;
+  font-size: 1.15rem;
+  max-width: 46ch;
+  color: rgba(239, 233, 220, 0.82);
+}
+
+.coords {
+  margin-top: 2.6rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--khaki);
+  display: flex;
+  gap: 2.4rem;
+  flex-wrap: wrap;
+}
+
+.page-meta {
+  margin-top: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--khaki-light);
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Stat callout row: big mono numbers, small labels
+   -------------------------------------------------------------------------- */
+.stat-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--line-light);
+  border-top: 1px solid var(--line-light);
+  border-bottom: 1px solid var(--line-light);
+}
+.stat {
+  background: var(--forest-deep);
+  padding: 1.8rem var(--pad-x) 1.8rem 1.6rem;
+}
+.stat .num {
+  font-family: var(--mono);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  color: var(--paper);
+  display: block;
+}
+.stat .label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--khaki-light);
+  margin-top: 0.35rem;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Paper content sections (prose)
+   -------------------------------------------------------------------------- */
+main.paper, section.paper, nav.courses {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+  color: var(--ink);
+}
+main.paper { padding: 6vh var(--pad-x) 8vh; }
+nav.courses { padding: 6vh var(--pad-x); }
+
+.section-label {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.72rem;
+  color: var(--ember);
+  margin-bottom: 1.2rem;
+}
+
+main.paper section { max-width: 68ch; margin: 0 auto 4.5rem; }
+main.paper section.wide { max-width: 1050px; }
+main.paper section:last-of-type { margin-bottom: 0; }
+
+main.paper h2 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.45rem;
+  margin-bottom: 1.1rem;
+}
+main.paper h3 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 1.6rem 0 0.6rem;
+}
+main.paper p { margin-bottom: 1rem; }
+main.paper p:last-child { margin-bottom: 0; }
+main.paper a { color: var(--ember); text-underline-offset: 3px; }
+main.paper ul, main.paper ol { margin: 0 0 1rem 1.3rem; }
+main.paper li { margin-bottom: 0.35rem; }
+
+main.paper strong { color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   Figures: numbered, mono captions, tinted placeholder until image swapped
+   -------------------------------------------------------------------------- */
+figure { margin: 1.8rem 0; }
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 120px;
+  object-fit: contain;               /* never stretch: ultra-wide images letterbox instead */
+  background: var(--paper-dim);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.6rem;                 /* alt text shows inside box while placeholder */
+}
+figcaption {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin-top: 0.55rem;
+}
+figcaption .fig-num { color: var(--ember); }
+
+/* --------------------------------------------------------------------------
+   Sidebar / aside (e.g., the UGRC story)
+   -------------------------------------------------------------------------- */
+aside.sidebar {
+  border-left: 3px solid var(--ember);
+  background: var(--paper-dim);
+  padding: 1.4rem 1.6rem;
+  margin: 2rem 0;
+}
+aside.sidebar .aside-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ember);
+  margin-bottom: 0.7rem;
+}
+aside.sidebar p { font-size: 0.95rem; }
+
+/* --------------------------------------------------------------------------
+   Skill tags: pill style, bottom of course pages
+   -------------------------------------------------------------------------- */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+.skill-tags a, .skill-tags span {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forest);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  background: var(--paper);
+}
+.skill-tags a:hover { background: var(--forest-deep); color: var(--paper); border-color: var(--forest-deep); }
+
+/* --------------------------------------------------------------------------
+   Homepage course grid
+   -------------------------------------------------------------------------- */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.course-card {
+  background: var(--paper);
+  padding: 2.2rem 1.8rem;
+  transition: background 0.25s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+}
+.course-card:hover { background: var(--paper-dim); }
+
+.course-card.featured { grid-column: span 2; background: var(--paper); }
+.course-card.featured .course-title { font-size: 1.45rem; }
+.course-card.featured:hover { background: var(--paper-dim); }
+
+.course-num {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--ember);
+  margin-bottom: 0.8rem;
+}
+.course-title {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+.course-desc { font-size: 0.92rem; color: var(--ink-soft); }
+.course-skills {
+  margin-top: 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--forest);
+  text-transform: uppercase;
+}
+
+/* Homepage intro blurb */
+.intro {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 5vh var(--pad-x) 0;
+}
+.intro p { max-width: 62ch; font-size: 1.05rem; }
+.intro a { color: var(--ember); }
+
+/* Research strip (thin dark band) */
+.research-strip {
+  position: relative;
+  z-index: 1;
+  background: var(--forest);
+  color: var(--paper);
+  padding: 2.2rem var(--pad-x);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.research-strip p { max-width: 60ch; font-size: 0.98rem; }
+.research-strip a { color: var(--paper); text-decoration-color: var(--ember); text-underline-offset: 3px; }
+.research-strip .strip-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--khaki-light);
+  flex-basis: 100%;
+}
+
+/* Arc links between paired pages (6130 ↔ 6165) and prev/next notes */
+.arc-link {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* --------------------------------------------------------------------------
+   Deliverables list styling
+   -------------------------------------------------------------------------- */
+ul.deliverables { list-style: none; margin-left: 0; }
+ul.deliverables li {
+  padding: 0.55rem 0 0.55rem 1.2rem;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+ul.deliverables li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--ember);
+  font-family: var(--mono);
+}
+
+/* --------------------------------------------------------------------------
+   Code excerpt (6150 pipeline steps)
+   -------------------------------------------------------------------------- */
+pre.code-excerpt {
+  background: var(--forest-deep);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 1.3rem 1.5rem;
+  overflow-x: auto;
+  margin: 1.6rem 0;
+  border-left: 3px solid var(--ember);
+}
+pre.code-excerpt .cmt { color: var(--khaki); }
+
+/* --------------------------------------------------------------------------
+   About photo slideshow
+   -------------------------------------------------------------------------- */
+.slideshow img { transition: opacity 0.9s ease; }
+.slideshow img.fading { opacity: 0; }
+
+/* --------------------------------------------------------------------------
+   Facts grid (About page): field / education / research blocks
+   -------------------------------------------------------------------------- */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin: 2rem 0 0;
+}
+.facts .fact {
+  background: var(--paper);
+  padding: 1.3rem 1.4rem;
+}
+.facts .fact-label {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ember);
+  margin-bottom: 0.6rem;
+}
+.facts .fact strong {
+  font-family: var(--sans);
+  font-size: 0.98rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.facts .fact p { font-size: 0.88rem; color: var(--ink-soft); margin: 0; }
+
+/* --------------------------------------------------------------------------
+   Skills-at-a-glance (About page): skill rows with per-course evidence tags
+   -------------------------------------------------------------------------- */
+.skills-glance { margin-top: 1.4rem; }
+.skills-glance .skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.skills-glance .skill-name {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+}
+.skills-glance .skill-courses { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.skills-glance .skill-courses a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--forest);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  background: var(--paper);
+}
+.skills-glance .skill-courses a:hover { background: var(--forest-deep); color: var(--paper); border-color: var(--forest-deep); }
+.skills-glance .skill-courses a.supporting { border-style: dashed; color: var(--khaki); }
+.skills-glance .skill-courses a.supporting:hover { color: var(--paper); }
+.skills-glance a:hover .course-ref { color: var(--khaki); }
+
+/* --------------------------------------------------------------------------
+   Story Map embed (6165)
+   -------------------------------------------------------------------------- */
+.storymap-embed {
+  margin: 1.8rem 0;
+  border: 1px solid var(--line);
+}
+.storymap-embed iframe {
+  display: block;
+  width: 100%;
+  height: 680px;
+  border: 0;
+}
+.storymap-fallback {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  padding: 0.5rem 0.8rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper-dim);
+}
+
+/* Before/after comparison pair (6165 design rationale) */
+.compare-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 1.8rem 0;
+}
+.compare-pair figure { margin: 0; }
+
+/* --------------------------------------------------------------------------
+   Course progression strip (6920)
+   -------------------------------------------------------------------------- */
+.progression { margin: 1.4rem 0 0; }
+.progression .prog-item {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.progression .prog-num {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ember);
+  flex: 0 0 2.2rem;
+}
+.progression .prog-item p { margin: 0; font-size: 0.95rem; flex: 1 1 30ch; }
+.progression .prog-item a { white-space: nowrap; font-family: var(--mono); font-size: 0.72rem; }
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 5vh var(--pad-x);
+  background: var(--forest-deep);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--khaki-light);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-top: 1px solid var(--line-light);
+}
+
+/* --------------------------------------------------------------------------
+   Mobile: single-column collapse
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  :root { --pad-x: 6vw; }
+  .topnav { gap: 1rem; font-size: 0.7rem; flex-wrap: wrap; }
+  .course-card.featured { grid-column: span 1; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .coords { gap: 1.2rem; }
+  .compare-pair { grid-template-columns: 1fr; }
+  .storymap-embed iframe { height: 480px; }
+}

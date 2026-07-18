@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVEEN 6920 · LSTM Streamflow Prediction | Magnus Tveit</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 1.4rem 0; }
+  table.data-table th, table.data-table td { border: 1px solid var(--line); padding: 0.5rem 0.7rem; text-align: left; }
+  table.data-table th { font-family: 'Courier New', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; background: var(--paper-dim); }
+  table.data-table td:first-child { font-family: 'Courier New', monospace; font-size: 0.78rem; }
+</style>
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html" aria-current="page">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="page-header">
+  <div class="eyebrow">CVEEN 6920 · Hydroinformatics</div>
+  <h1>LSTM Streamflow Prediction in the Upper Green River Basin</h1>
+  <div class="page-meta">
+    <span>Instructor: Dr. Ryan Johnson</span>
+    <span>Spring 2026</span>
+  </div>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><span class="num">4</span><span class="label">USGS gauges</span></div>
+  <div class="stat"><span class="num">34 yrs</span><span class="label">of daily data · 1990–2023</span></div>
+  <div class="stat"><span class="num">NSE 0.524</span><span class="label">on the unseen test site</span></div>
+  <div class="stat"><span class="num">NSE 0.755</span><span class="label">best training site</span></div>
+</div>
+
+<main class="paper">
+
+  <section id="background">
+    <div class="section-label">Background</div>
+    <h2>Why an LSTM</h2>
+    <p>Physics-based rainfall-runoff models have to be parameterized and calibrated for each catchment, which makes them hard to scale across a region. LSTMs learn the relationships straight from observed records, and they fit rivers well because their gated memory holds information across long time lags. The <strong>LSTM cell state works a lot like watershed storage</strong>. It can carry snowpack information that keeps affecting streamflow weeks after the snow fell.</p>
+    <p>The training sites (Green River near Green River, WY; White River near Watson, UT; and Yampa River at Steamboat Springs, CO) are mostly unregulated, so the observed flow reflects the catchment's natural response to climate instead of reservoir release decisions the model could never learn.</p>
+  </section>
+
+  <section id="methods">
+    <div class="section-label">Data &amp; methods</div>
+    <h2>Data and methods</h2>
+    <p>Daily streamflow comes from USGS NWIS through the <code>dataretrieval</code> package. Daily climate inputs (precipitation, max temperature, and snow water equivalent) come from Daymet through <code>pydaymet</code>. Everything downloads automatically for 1990–2023, no manual steps. The model was tested on a site it never saw in training: the Yampa River at Deerlodge Park, CO, about 185 km downstream of Steamboat Springs with a much larger drainage area. I ran a manual hyperparameter search over lookback windows (30/90/365 days), hidden sizes (32/64), and learning rates. The winning setup is in Table 1.</p>
+    <table class="data-table">
+      <thead><tr><th colspan="2">Data Split</th><th colspan="2">Model Architecture</th></tr></thead>
+      <tbody>
+        <tr><td>Training</td><td>1990–2014</td><td>LSTM layers</td><td>1</td></tr>
+        <tr><td>Validation</td><td>2015–2018</td><td>Hidden units</td><td>64</td></tr>
+        <tr><td>Test</td><td>2019–2023</td><td>Dropout</td><td>0.0</td></tr>
+      </tbody>
+      <thead><tr><th colspan="2">Training Configuration</th><th colspan="2">Features</th></tr></thead>
+      <tbody>
+        <tr><td>Optimizer</td><td>Adam</td><td>Lookback</td><td>30 days</td></tr>
+        <tr><td>Learning rate</td><td>1×10⁻³</td><td>prcp_mm_day</td><td>precipitation</td></tr>
+        <tr><td>Batch size</td><td>64</td><td>tmax_degC</td><td>max temperature</td></tr>
+        <tr><td>Max epochs</td><td>50</td><td>swe_cm</td><td>snow water equiv.</td></tr>
+        <tr><td>Early stopping</td><td>8 epochs</td><td>Scaling</td><td>MinMaxScaler</td></tr>
+        <tr><td>Loss</td><td>MSE</td><td>Metrics</td><td>RMSE, MAE, NSE</td></tr>
+      </tbody>
+    </table>
+    <p style="font-family:'Courier New',monospace; font-size:0.72rem; color:var(--ink-soft); margin-top:-0.6rem;"><span style="color:var(--ember);">Table 1.</span> LSTM architecture, training configuration, data split, and input features.</p>
+  </section>
+
+  <section id="results">
+    <div class="section-label">Results</div>
+    <h2>Results</h2>
+    <p>The model scored <strong>NSE 0.524 at Deerlodge Park</strong>, a site with no training data at all. That is real spatial generalization from upstream gauges to a downstream site with a bigger drainage area. Steamboat Springs, upstream on the same river, was the best training site (NSE 0.755), and that shared drainage probably drove the downstream transfer. The White River came in at 0.466. Seasonal timing was captured well at every site.</p>
+    <figure>
+      <img src="img/6920-fig2.png" alt="Training and validation loss by epoch, minimum validation loss at epoch 4.">
+      <figcaption><span class="fig-num">Figure 1.</span> Training history. Validation loss bottoms out at epoch 4 while training loss keeps declining.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/6920-fig3.png" alt="Observed versus predicted daily streamflow hydrographs for all four sites, 2019-2023.">
+      <figcaption><span class="fig-num">Figure 2.</span> Observed vs. predicted hydrographs, 2019–2023; test site highlighted in red.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/6920-fig4.png" alt="Bar chart of RMSE, MAE, and NSE performance across all four sites.">
+      <figcaption><span class="fig-num">Figure 3.</span> Performance summary across sites; dashed line marks the NSE = 0 mean-flow baseline.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/6920-fig5.png" alt="Observed versus predicted scatter plots with 1:1 reference lines for all four sites.">
+      <figcaption><span class="fig-num">Figure 4.</span> Scatter plots vs. the 1:1 line; points cluster below it at high flows.</figcaption>
+    </figure>
+  </section>
+
+  <section id="discussion">
+    <div class="section-label">Discussion</div>
+    <h2>Where the model fails</h2>
+    <p><strong>The model's biggest weakness is underpredicting peak flows</strong>, and it comes straight from the MSE loss. High flows are rare, so the model gets the lowest total loss by staying near the mean and giving up on the extremes. The training history shows the same thing. Validation loss stopped improving at epoch 4, once the model had fit the low-flow regime that dominates the record.</p>
+    <p>The Green River scored NSE −0.036 even though it was a <em>training</em> site. That is worse than just predicting the mean. Its peaks are much larger than the other two training sites', and training on multiple sites without normalizing flow by drainage area pushes the model toward fitting the smaller sites at the big one's expense. Dropout had no effect anywhere in the search, so overfitting isn't the problem. The problem is how much information point-location climate features actually carry for a site with flow this complex.</p>
+  </section>
+
+  <section id="progression">
+    <div class="section-label">Course progression</div>
+    <h2>Course progression</h2>
+    <div class="progression">
+      <div class="prog-item">
+        <span class="prog-num">A1</span>
+        <p>Reproducible time-series analysis: USGS streamflow, temporal resampling, headwater vs. regulated comparison.</p>
+        <a href="https://github.com/magnustveit1/reproducible-streamflow-analysis">repo →</a>
+      </div>
+      <div class="prog-item">
+        <span class="prog-num">A2</span>
+        <p>Flaming Gorge water supply forecast: automated SNOTEL + NWIS + NHD pipeline, SWE-runoff regression.</p>
+        <a href="https://github.com/magnustveit1/flaming-gorge-hydro">repo →</a>
+      </div>
+      <div class="prog-item">
+        <span class="prog-num">A3</span>
+        <p>Culminating in this LSTM: reproducibility → pipeline → machine learning.</p>
+        <a href="https://github.com/magnustveit1/green-basin-lstm">repo →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="section-label">Skills demonstrated</div>
+    <div class="skill-tags">
+      <a href="about.html#skills">Model Building</a>
+      <a href="about.html#skills">Spatial Analysis</a>
+      <a href="about.html#skills">Project Design</a>
+      <a href="about.html#skills">Communication</a>
+      <a href="about.html#skills">Programming / Scripting</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>

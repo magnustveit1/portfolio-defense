@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone · HRWUI Structure Identification | Magnus Tveit</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="contour-bg"></div>
+
+<nav class="topnav" aria-label="Site">
+  <a class="monogram" href="index.html" aria-label="Home">MT</a>
+  <a href="about.html">About</a>
+  <a class="nav-capstone" href="capstone.html" aria-current="page">Capstone</a>
+  <div class="nav-dropdown">
+    <button aria-haspopup="true">Courses ▾</button>
+    <ul>
+      <li><a href="6150.html">GEOG 6150 · Geospatial Big Data</a></li>
+      <li><a href="6130.html">GEOG 6130 · Advanced Active Remote Sensing</a></li>
+      <li><a href="6165.html">GEOG 6165 · Data Visualization</a></li>
+      <li><a href="6920.html">CVEEN 6920 · Hydroinformatics</a></li>
+    </ul>
+  </div>
+  <a class="nav-contact" href="mailto:magnus.tveit1@gmail.com">Contact</a>
+</nav>
+
+<header class="page-header">
+  <div class="eyebrow">GEOG 6161 · Capstone</div>
+  <h1>Identifying Structures Within the High-Risk Wildland Urban Interface</h1>
+  <div class="page-meta">
+    <span>Partner: Utah Division of Forestry, Fire &amp; State Lands (Tommy Thompson)</span>
+    <span>Instructor: Dr. Phoebe McNeally</span>
+  </div>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><span class="num">138,000 km²</span><span class="label">study area</span></div>
+  <div class="stat"><span class="num">16,676</span><span class="label">polygons reviewed</span></div>
+  <div class="stat"><span class="num">89.3%</span><span class="label">model recall</span></div>
+  <div class="stat"><span class="num">356,109</span><span class="label">SQL records joined</span></div>
+</div>
+
+<main class="paper">
+
+  <section id="background">
+    <div class="section-label">Background</div>
+    <h2>Why FFSL needs this inventory</h2>
+    <p>Utah maps wildfire risk with a Structure Exposure Score (SES), where scores of 7 or 8 mark the highest-risk areas. These zones plus a 400-meter buffer define the study area, which covers roughly 138,000 km², about 63% of the state. The High-Risk Wildland Urban Interface (HRWUI) is the subset where two or more structures sit within 250 meters of each other inside the SES 7/8 boundary.</p>
+    <p>Under Utah House Bill 48 (HB48), FFSL has to identify every structure meeting that criterion, and counties will charge those structures an annual fee. The problem is that no verified inventory of them exists. This capstone worked on it two ways. The first was a manual review of an existing building dataset. The second was a deep learning model that detects structures at scale and can be rerun every year.</p>
+    <figure>
+      <img src="img/capstone-fig1.png" alt="Map of the study area boundary: SES 7/8 zones plus a 400-meter buffer across Utah.">
+      <figcaption><span class="fig-num">Figure 1.</span> Study area boundary (SES 7/8 + 400 m buffer).</figcaption>
+    </figure>
+  </section>
+
+  <section id="track1">
+    <div class="section-label">Track 1</div>
+    <h2>Manual review</h2>
+    <p>Overture Maps Foundation (OMF) building polygons served as the starting inventory. Each polygon was reviewed in ArcGIS Pro, with missed structures digitized as false negatives and incorrect detections flagged as false positives. I worked from the bottom of the dataset upward while an FFSL GIS analyst worked from the top down.</p>
+    <p>I reviewed 29% of the inventory (16,676 of 57,906 polygons), digitizing <strong>1,657 false negatives</strong> and removing <strong>322 false positives</strong>. The corrected dataset is the primary production deliverable for HB48 fee administration.</p>
+    <figure>
+      <img src="img/capstone-fig2.png" alt="Aerial imagery examples showing false positive detections in orange and false negative detections in pink.">
+      <figcaption><span class="fig-num">Figure 2.</span> Representative false positive (orange) and false negative (pink) detections identified during manual review of OMF building polygons.</figcaption>
+    </figure>
+  </section>
+
+  <section id="track2">
+    <div class="section-label">Track 2</div>
+    <h2>Deep learning pipeline</h2>
+    <p>Manual review can't cover all 29 counties in any reasonable amount of time, so the second track automates detection. The model is a Mask R-CNN, a type of convolutional neural network that finds objects in imagery and traces each one's footprint. I didn't train it from scratch. I started from a version ESRI had already pretrained on building footprints (ResNet50 backbone, 43.9 million parameters) and fine-tuned it on the 16,676 polygons from the manual review.</p>
+    <p>The training data was about 34,000 image chips, each 512 by 512 pixels, cut from 15 cm Hexagon aerial imagery pulled through UGRC's Discover service (WMTS, a standard way of serving map imagery as web tiles). The chips were labeled in COCO format (Common Objects in Context), the standard format for object detection training data. Training took about eight hours on a CHPC NVIDIA H200 GPU. The best validation loss was 0.3407 at epoch 18, and training stopped automatically at epoch 23 once the model quit improving.</p>
+    <p>Inference runs one county at a time, so counties can run in parallel without any special code. For each county, a 57-meter raster mask limits processing to the study area, and jobs go through SLURM (the CHPC's job scheduler) to H200 GPU nodes. Post-processing cleans the raw output. Detections get filtered by shape and a 25 m² minimum size, duplicates get removed with non-maximum suppression (when two detections overlap by more than 15%, measured as Intersection over Union, only the stronger one is kept), overlapping polygons get dissolved, and each detection gets a confidence score between 0.5 and 1.0.</p>
+
+    <aside class="sidebar">
+      <div class="aside-label">Sidebar · The UGRC pause</div>
+      <p>Partway into the third county, UGRC suspended our imagery access. The model's tile requests were putting more load on their servers than they had ever seen. Davis (358 detections) and Weber (2,350 detections) were already done. After meeting with UGRC, the fix going forward is downloading the full study area imagery (about 17 TB) locally. The semester deliverables were re-scoped around the two finished counties, with a documented plan for the rest of the state.</p>
+    </aside>
+  </section>
+
+  <section id="sql">
+    <div class="section-label">Enrichment</div>
+    <h2>SQL enrichment workflow</h2>
+    <p>A PostGIS workflow attaches ownership and tax data to each structure. Structures join to UGRC parcel boundaries when they overlap a parcel by more than 50%, then get matched to 2025 tax records from the Utah Office of the State Auditor, a statewide table with 1.6 million rows. County and state parcel IDs don't share a format, so the join applies cleaning rules county by county. The finished Weber County join returned <strong>356,109 matched records</strong> with owner name, property type, year built, square footage, assessed value, and taxes charged. Those are the fields FFSL needs to calculate fees.</p>
+  </section>
+
+  <section id="results">
+    <div class="section-label">Results</div>
+    <h2>Weber County validation</h2>
+    <p>Three counts drive the validation. A true positive (TP) is a detection that matches a verified structure; a false positive (FP) is a detection with no verified structure behind it; a false negative (FN) is a verified structure the model missed.</p>
+    <p>Predictions were validated against manually verified structures from the FFSL analyst's dataset (the Johnson dataset), within the SES 7/8 boundary that dataset covers. The model hit a <strong>recall of 89.3%</strong>, finding almost nine out of ten known structures. That fits the goal here. Missing a structure that should be charged a fee is a bigger problem than flagging something extra for review, so recall matters more than precision.</p>
+    <p>Precision was 36.4%, so there are a lot of false positives, but some of those are probably real structures that just aren't in the Johnson dataset yet. The best balance between precision and recall lands at a confidence threshold of 0.90 (F1 around 0.50), which keeps about half of all detections.</p>
+    <figure>
+      <img src="img/capstone-fig3.png" alt="Table of true positive, false positive, false negative, and total detections by confidence score interval.">
+      <figcaption><span class="fig-num">Figure 3.</span> TP / FP / FN and total detections by confidence interval. FNs lack confidence scores because they are verified structures the model failed to detect.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/capstone-fig4.png" alt="Bar chart of true positive and false positive detections across confidence score intervals for Weber County.">
+      <figcaption><span class="fig-num">Figure 4.</span> Distribution of true positive and false positive detections across confidence score intervals, Weber County.</figcaption>
+    </figure>
+    <h3>Structures outside the current boundary</h3>
+    <p><strong>468 of the 2,350 Weber County detections sit inside the SES 7/8 boundary but outside the current HRWUI boundary.</strong> If those turn out to be real structures with neighbors within 250 meters, they were missed when the boundary was drawn, and the current HRWUI likely undercounts the structures that should be subject to the fee. Each one needs individual review.</p>
+    <figure>
+      <img src="img/capstone-fig5.png" alt="Map panels of two Weber County areas showing detection outcomes colored by confidence score.">
+      <figcaption><span class="fig-num">Figure 5.</span> Detection outcomes for two representative Weber County areas. Darker colors indicate higher confidence. Compared against 572 manually verified structures using spatial overlap.</figcaption>
+    </figure>
+  </section>
+
+  <section id="deliverables">
+    <div class="section-label">Deliverables</div>
+    <h2>Deliverables</h2>
+    <ul class="deliverables">
+      <li>Manually reviewed geodatabase, the immediate production dataset for HB48</li>
+      <li>Deep learning output shapefiles for Weber and Davis Counties</li>
+      <li>SQL join table linking Weber County structures to parcel and OSA tax data</li>
+      <li>1-page how-to guide for future manual reviewers</li>
+      <li>Final technical report, FFSL presentation, and 36×48″ poster</li>
+      <li><a href="https://github.com/magnustveit1/ffsl-hrwui">GitHub repository</a> with the full model and weights, reproducibility documentation, SQL join scripts, and validation code</li>
+    </ul>
+    <p style="margin-top:1.4rem;"><em>This work is ongoing. I'm continuing the statewide inference and fee-calculation workflow with Utah DNR/FFSL.</em></p>
+  </section>
+
+  <section id="skills">
+    <div class="section-label">Skills demonstrated</div>
+    <div class="skill-tags">
+      <a href="about.html#skills">GIS Analysis</a>
+      <a href="about.html#skills">Spatial Data &amp; Algorithms</a>
+      <a href="about.html#skills">GIS Workflow</a>
+      <a href="about.html#skills">Model Building</a>
+      <a href="about.html#skills">Cartography &amp; Graphic Design</a>
+      <a href="about.html#skills">Spatial Analysis</a>
+      <a href="about.html#skills">Data Models &amp; Structures</a>
+      <a href="about.html#skills">Database Design</a>
+      <a href="about.html#skills">SQL</a>
+      <a href="about.html#skills">Project Design</a>
+      <a href="about.html#skills">Project Management</a>
+      <a href="about.html#skills">Communication</a>
+      <a href="about.html#skills">Programming / Scripting</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><a href="mailto:magnus.tveit1@gmail.com">magnus.tveit1@gmail.com</a></span>
+  <span><a href="https://github.com/magnustveit1">github.com/magnustveit1</a></span>
+  <span>MSGIS Portfolio · University of Utah · 2026</span>
+</footer>
+
+</body>
+</html>
